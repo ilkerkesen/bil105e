@@ -42,12 +42,15 @@ int main(int argc, char *argv[])
   update_locations(pieces, black_pieces_locations, white_pieces_locations);
   update_state(board_state, black_pieces_locations, white_pieces_locations, &blank_lines);
 
+
   int i, j;
-  for(i = 0; i < LOCATIONS; i++) {
-    for(j = 0; j < LOCATIONS / 2 - 1; j++)
-      printf("%c ", board_state[i][j]);
+  for(i = 0; i < BOARD_LINES; i++) {
+    for(j = 0; j < BOARD_COLUMNS; j++)
+      printf("%c [%2d, %2d] ", board_state[i][j]);
     printf("\n");
   }
+
+  printf("Blank lines: %d\n", blank_lines);
 
   return 0;
 }
@@ -119,27 +122,16 @@ void initialize_state(char board_state[][BOARD_COLUMNS])
 /* FIXME */
 void update_state(char board_state[][BOARD_COLUMNS], int black_pieces_locations[], int white_pieces_locations[], int* blank_lines)
 {
-  int i, j, k;
+  int i, j, k, m, n;
   int top_null_chars, bot_null_chars;
   *blank_lines = 0;
 
-  for(i = 0; i < 15; i++) {
-    for(j = 13; j < 25; j++) {
-      if(black_pieces_locations[j] != 0 && i < black_pieces_locations[j])
-	board_state[i][j-12] = 'B';
-      else if(white_pieces_locations[j] != 0 && i < white_pieces_locations[j])
-	board_state[i][j-12] = 'W';
-
-    }
-  }
-
-  /*  
   for(i = 0, m = BOARD_LINES - 1; i < BOARD_LINES / 2; i++, m--) {
     top_null_chars = 0;
     bot_null_chars = 0;
 
     for(j = LOCATIONS / 2, n = LOCATIONS / 2 - 1, k = 0; j < LOCATIONS - 1; j++, n--, k++) {
-      /* top board 
+      /* top board */
       if(black_pieces_locations[j] != 0 && i < black_pieces_locations[j])
 	board_state[i][k] = 'B';
       else if(white_pieces_locations[j] != 0 && i < white_pieces_locations[j])
@@ -147,10 +139,10 @@ void update_state(char board_state[][BOARD_COLUMNS], int black_pieces_locations[
       else
 	top_null_chars += 1;
 
-      /* bottom board 
-      if(black_pieces_locations[n] != 0 && 30 - m < black_pieces_locations[n])
+      /* bottom board */ 
+      if(black_pieces_locations[n] != 0 && BOARD_LINES - 1 - m < black_pieces_locations[n])
 	board_state[m][k] = 'B';
-      else if(white_pieces_locations[n] != 0 && 30 - m < white_pieces_locations[n])
+      else if(white_pieces_locations[n] != 0 && BOARD_LINES - 1 - m < white_pieces_locations[n])
 	board_state[m][k] = 'W';
       else
 	bot_null_chars += 1;
@@ -162,5 +154,5 @@ void update_state(char board_state[][BOARD_COLUMNS], int black_pieces_locations[
     if(bot_null_chars == 12)
       *blank_lines += 1;
   
-  }*/
+  }
 }
