@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 /* CONSTANT DEFINITIONS */
 
@@ -10,11 +12,13 @@
 
 /* FUNCTION DECLERATIONS */
 
+void welcome();
 void initialize_pieces(int [], int []);
 void print_board(int [], int []);
 int get_maximum_piece(int [], int[]);
 int get_lines_length(int);
 void print_side(const char*);
+void throw_dices(int*, int*);
 
 /* MAIN FUNCTION*/
 
@@ -24,13 +28,40 @@ int main(int argc, char *argv[])
   int black_pieces[26];
   int white_pieces[26];
 
-  initialize_pieces(black_pieces, white_pieces);
-  print_board(black_pieces, white_pieces);
+  int black_score = 0;
+  int white_score = 0;
 
+  int dice1, dice2;
+  int turn; /* turn = 0 means computer's turn, turn = 1 means human's turn */
+
+  srand(time(NULL));
+
+  initialize_pieces(black_pieces, white_pieces);
+
+  welcome();
+  printf("\n");
+  print_board(black_pieces, white_pieces);
+    
   return 0;
 }
 
 /* FUNCTION DEFINITIONS */
+
+void welcome()
+{
+  printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+	 "///////////////////////////////////////////////////",
+	 "//                                               //",
+	 "//   Tavla (backgammon) game, homework project   //",
+	 "//   İlker Kesen, keseni_itu.edu.tr, 040100411   //",
+	 "//                                               //",
+	 "//   Howto play?                                 //",
+	 "//   Piece: enter the location of the piece      //",
+	 "//   Dice: enter the dice you want to play       //",
+	 "//                                               //",
+	 "///////////////////////////////////////////////////");
+}
+
 
 void initialize_pieces(int black_pieces[], int white_pieces[])
 {
@@ -151,4 +182,10 @@ void print_side(const char* side)
     printf("\n");
     printf("%40sBlack Home Base\n", "");
   }
+}
+
+void throw_dices(int* dice1, int* dice2)
+{
+  *dice1 = rand() % 6 + 1;
+  *dice2 = rand() % 6 + 1;
 }
