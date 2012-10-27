@@ -4,8 +4,6 @@
 
 #define PIECES 30
 #define LOCATIONS 26
-#define LINES 30
-#define COLUMNS 12
 
 /* STRUCT DEFINITIONS */
 
@@ -25,10 +23,6 @@ int main(int argc, char *argv[])
   /* VARIABLE DEFINITIONS */
   int black_pieces[26];
   int white_pieces[26];
-  char board[LINES][COLUMNS];
-  int blank_lines;
-
-  const char *color[] = {"black", "white"};
 
   initialize_pieces(black_pieces, white_pieces);
   print_board(black_pieces, white_pieces);
