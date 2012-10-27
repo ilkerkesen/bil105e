@@ -4,17 +4,19 @@
 
 #define PIECES 30
 #define LOCATIONS 26
-#define BOARD_LINES 30
-#define BOARD_COLUMNS 12
+#define LINES 30
+#define COLUMNS 12
 
 /* STRUCT DEFINITIONS */
+
 
 /* FUNCTION DECLERATIONS */
 
 void initialize_pieces(int [], int []);
-void initialize_board(char [][BOARD_COLUMNS]);
-void update_board(char [][BOARD_COLUMNS], int [], int[], int*);
-void print_board(char [][BOARD_COLUMNS], int*);
+void print_board(int [], int []);
+int get_maximum_piece(int [], int[]);
+int get_lines_length(int);
+void print_side(const char*);
 
 /* MAIN FUNCTION*/
 
@@ -23,24 +25,13 @@ int main(int argc, char *argv[])
   /* VARIABLE DEFINITIONS */
   int black_pieces[26];
   int white_pieces[26];
-  char board[BOARD_LINES][BOARD_COLUMNS];
+  char board[LINES][COLUMNS];
   int blank_lines;
 
   const char *color[] = {"black", "white"};
 
   initialize_pieces(black_pieces, white_pieces);
-  initialize_board(board);
-  update_board(board, black_pieces, white_pieces, &blank_lines);
-
-
-  int i, j;
-  for(i = 0; i < BOARD_LINES; i++) {
-    for(j = 0; j < BOARD_COLUMNS; j++)
-      printf("%c [%2d, %2d] ", board[i][j]);
-    printf("\n");
-  }
-
-  printf("Blank lines: %d\n", blank_lines);
+  print_board(black_pieces, white_pieces);
 
   return 0;
 }
@@ -73,48 +64,97 @@ void initialize_pieces(int black_pieces[], int white_pieces[])
   }
 }
 
-void initialize_board(char board_state[][BOARD_COLUMNS])
+void print_board(int black_pieces[], int white_pieces[])
 {
-  int i, j;
-  for(i = 0; i < BOARD_LINES; i++) {
-    for(j = 0; j < BOARD_COLUMNS; j++)
-      board_state[i][j] = ' ';
+  /* counters  */
+  int i, j, k;
+  
+  const int limit = get_lines_length(get_maximum_piece(black_pieces, white_pieces));
+
+  print_side("top");
+  
+  for(i = 0; i < limit; i++) {
+    printf("||||");
+    for(j = 12, k = 13; j > 0; j--, k++) {
+      printf("%3s", "");
+
+      if(black_pieces[k] > i || black_pieces[j] + i >= limit)
+	printf("B");
+      else if(white_pieces[k] > i || white_pieces[j] + i >= limit)
+	printf("W");
+      else
+	printf(" ");
+
+      if(k == 18 || k == 24 || j == 7 || j == 1)
+	printf("%3s||||", "");
+    }
+    printf("\n");
   }
+
+  print_side("bottom");
+
+
 }
 
-void update_board(char board_state[][BOARD_COLUMNS], int black_pieces[], int white_pieces[], int* blank_lines)
+int get_maximum_piece(int black_pieces[], int white_pieces[])
 {
-  int i, j, k, m, n;
-  int top_null_chars, bot_null_chars;
-  *blank_lines = 0;
+  /* evulate max piece on a location and its opposite location */
+  int i;
+  int hold;
+  int max_piece = 0;
 
-  for(i = 0, m = BOARD_LINES - 1; i < BOARD_LINES / 2; i++, m--) {
-    top_null_chars = 0;
-    bot_null_chars = 0;
+  for(i = 1; i < LOCATIONS / 2 - 1; i++) {
+    hold = black_pieces[i] + white_pieces[i] + black_pieces[LOCATIONS - 1 - i] + white_pieces[LOCATIONS - 1 - i];
+    if(hold > max_piece)
+      max_piece = hold;
+  }
 
-    for(j = LOCATIONS / 2, n = LOCATIONS / 2 - 1, k = 0; j < LOCATIONS - 1; j++, n--, k++) {
-      /* top board */
-      if(black_pieces[j] != 0 && i < black_pieces[j])
-	board_state[i][k] = 'B';
-      else if(white_pieces[j] != 0 && i < white_pieces[j])
-	board_state[i][k] = 'W';
-      else
-	top_null_chars += 1;
+  return max_piece;
+}
 
-      /* bottom board */ 
-      if(black_pieces[n] != 0 && BOARD_LINES - 1 - m < black_pieces[n])
-	board_state[m][k] = 'B';
-      else if(white_pieces[n] != 0 && BOARD_LINES - 1 - m < white_pieces[n])
-	board_state[m][k] = 'W';
-      else
-	bot_null_chars += 1;
-    }
-    
-    if(top_null_chars == 12)
-      *blank_lines += 1;
-    
-    if(bot_null_chars == 12)
-      *blank_lines += 1;
+int get_lines_length(int max_piece)
+{
+  if (max_piece < 15)
+    return 14;
+
+  return max_piece;
+}
+
+void print_side(const char* side)
+{
+  int i;
   
+  if(side == "top") {
+    printf("%40sWhite Home Base\n", "");
+    for(i = 13; i < 25; i++) {
+      if(i % 6 == 1)
+	printf("%6s", "");
+      if(i == 19)
+	printf(" ");
+      printf("%2d%2s", i, "");    
+    }
+    printf("\n");
+  }
+
+  /* ||||---|---|.... */
+  for(i = 0; i < 14; i++) {
+    if(i % 7 == 0) {
+      printf("|||");
+    }
+    printf("|---");
+  }
+  printf("||||\n");
+  
+
+  if(side == "bottom") {
+    for(i = 12; i > 0; i--) {
+      if(i % 6 == 0)
+	printf("%6s", "");
+      if(i == 6)
+	printf(" ");
+      printf("%2d%2s", i, "");    
+    }
+    printf("\n");
+    printf("%40sBlack Home Base\n", "");
   }
 }
