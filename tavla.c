@@ -19,6 +19,8 @@ int get_maximum_piece(int [], int[]);
 int get_lines_length(int);
 void print_side(const char*);
 void throw_dices(int*, int*);
+void update_movements(int, int, int []);
+int any_movements_exist(int []);
 
 /* MAIN FUNCTION*/
 
@@ -28,20 +30,65 @@ int main(int argc, char *argv[])
   int black_pieces[26];
   int white_pieces[26];
 
-  int black_score = 0;
-  int white_score = 0;
+  int black_score;
+  int white_score;
 
   int dice1, dice2;
-  int turn; /* turn = 0 means computer's turn, turn = 1 means human's turn */
+  int turn; /* turn % 2 == 0 means human's turn, turn % 2 == 1 means computer's turn */
+  int movements[4]; /* movements rights caused by dice rolling process */
+
+  char response;
 
   srand(time(NULL));
 
-  initialize_pieces(black_pieces, white_pieces);
-
   welcome();
-  printf("\n");
-  print_board(black_pieces, white_pieces);
+  
+  printf("Do you want to play? [y/n]: ");
+  scanf("%c", &response);
+  getchar();
+
+  while(response == 'y') {
+    /* game initialization */
+    black_score = 0;
+    white_score = 0;
+    initialize_pieces(black_pieces, white_pieces);
     
+    do {
+      printf("\nThrowing dices.");
+      throw_dices(&dice1, &dice2);
+      printf("\n%s%d\n%s%d\n",
+	     "  Black (human): ", dice1,
+	     "  White (computer): ", dice2);
+    } while(dice1 == dice2);
+
+    if(dice1 > dice2) {
+      turn = 0;
+      printf("Black");
+    }
+    else {
+      turn = 1;
+      printf("White");
+    }
+
+    printf(" starts.\n");
+    break;
+
+    while(black_score < 5 && white_score < 5) {
+      throw_dices(&dice1, &dice2);
+      update_movements(dice1, dice2, movements);
+
+      while(any_movements_exist(movements)) {
+	// FIXME: i am so tired
+      }
+
+      if(turn % 2 == 0) {
+	printf("Black's turn.");
+      }
+    
+      turn++;
+    }
+  }
+
   return 0;
 }
 
@@ -49,7 +96,7 @@ int main(int argc, char *argv[])
 
 void welcome()
 {
-  printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+  printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n",
 	 "///////////////////////////////////////////////////",
 	 "//                                               //",
 	 "//   Tavla (backgammon) game, homework project   //",
@@ -188,4 +235,33 @@ void throw_dices(int* dice1, int* dice2)
 {
   *dice1 = rand() % 6 + 1;
   *dice2 = rand() % 6 + 1;
+}
+
+void update_movements(int dice1, int dice2, int movements[])
+{
+  int i;
+  
+  if(dice1 == dice2) {
+    for(i = 0; i < 4; i++) {
+      movements[i] = dice1;
+    }
+  }
+  else {
+    movements[0] = dice1;
+    movements[1] = dice2;
+    movements[2] = 0;
+    movements[3] = 0;
+  }
+}
+
+int any_movements_exist(int movements [])
+{
+  int i;
+  
+  for(i = 0; i < 4; i++) {
+    if(movements[i] != 0)
+      return 1;
+  }
+  
+  return 0;
 }
