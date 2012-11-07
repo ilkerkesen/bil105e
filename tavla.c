@@ -59,13 +59,16 @@ int main(int argc, char *argv[])
   printf("Do you want to play? [y/n]: ");
   scanf("%c", &response);
 
+  /* main loop */
   while(response == 'y') {
     /* game initialization */
     initialize_game(&black_score, &white_score, dice1, dice2, &turn);
 
+    /* game loop */
     while(black_score < 5 && white_score < 5) {
       initialize_pieces(black_pieces, white_pieces);
-      while(black_pieces[0] != 15 || white_pieces[25] != 15) {
+      /* subgame loop */
+      while(black_pieces[0] != 15 && white_pieces[25] != 15) {
 	throw_dices(&dice1, &dice2);
 	update_movements(dice1, dice2, movements);
 	play_turn(black_pieces, white_pieces, dice1, dice2, movements, &turn, is_black_human, is_white_human);
@@ -297,22 +300,28 @@ int any_movements_exist(int black_pieces[], int white_pieces[], int movements[],
   if(color == "black" && black_pieces[25] != 0) {
     for(i = 0; i < 4; i++) {
       printf("%d, %d, %d\n", i, movements[i], is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color));
-      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color))
-	 return 1;
+      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color)) {
+	printf("yep: %d, %d\n", 25, movements[i]); 
+	return 1;
+      }
     }
   }
 
   if(color == "white" && white_pieces[0] != 0) {
     for(i = 0; i < 4; i++) {
-      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color))
+      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color)) {
+	printf("yep: %d, %d\n", 0, movements[i]);
 	return 1;
+      }
     }
   }
 
   for(i = 1; i < LOCATIONS - 1; i++) {
     for(j = 0; j < 4; j++) {
-      if(is_available_movement(black_pieces, white_pieces, movements, i, movements[j], color))
+      if(is_available_movement(black_pieces, white_pieces, movements, i, movements[j], color)) {
+	printf("yup: %d, %d\n", i, movements[j]);
 	return 1;
+      }
     }
   }
 
@@ -323,96 +332,121 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
 {
   int i;
 
-  if(movement != movements[0] && movement != movements[1] && movement != movements[2] && movement != movements[3])
+  /* check movements */
+  if(movement != movements[0] && movement != movements[1] && movement != movements[2] && movement != movements[3]) {
+    printf("common debug.\n");
     return 0;
-
-  /* black check location */
-  if(color == "black" && black_pieces[location] == 0)
-    return 0;
-
-  /* black check broken */
-  if(color == "black" && black_pieces[25] != 0 && location != 25)
-    return 0;
-
-  /* black check broken moveable */
-  if(color == "black" && location == 25 && black_pieces[25] != 0) {
-    int moveable = 0;
-    
-    for(i = 0; i < 4; i++) {
-      if(white_pieces[25 - movements[i]] < 2)
-	moveable = 1;
-    }
-    
-    if(moveable == 0)
-      return 0;
-  
   }
 
-  /* black collecting */
-  if(color == "black" && location - movement < 1) {
+  if(color == "black") {
+    /* black check location */
+    if(black_pieces[location] == 0) {
+      printf("bdbug: a\n");
+      return 0;
+    }
 
-    for(i = 7; i < LOCATIONS; i++) {
-      if(black_pieces[i] != 0) {
+    /* black check broken */
+    else if(black_pieces[25] != 0 && location != 25) {
+      printf("bdbug: b\n");
+      return 0;
+    }
+    
+    /* black check broken moveable */
+    else if(location == 25 && black_pieces[25] != 0) {
+      int moveable = 0;
+    
+      for(i = 0; i < 4; i++) {
+	if(white_pieces[25 - movements[i]] < 2)
+	  moveable = 1;
+      }
+    
+      if(moveable == 0) {
+	printf("bdbug: c\n");
 	return 0;
       }
     }
 
-    if(movement > location) {
-      for(i = location + 1; i < 7; i++) {
+    /* black collecting */
+    else if(location - movement < 1) {
+      
+      for(i = 7; i < LOCATIONS; i++) {
 	if(black_pieces[i] != 0) {
+	  printf("bdbug: d1\n");
 	  return 0;
+	}
+      }
+      
+      if(movement > location) {
+	for(i = location + 1; i < 7; i++) {
+	  if(black_pieces[i] != 0) {
+	    printf("bdbug: d2\n");
+	    return 0;
+	  }
+	}
+      }
+      
+    }
+    
+    /* black standart movement */
+    else if(white_pieces[location - movement] > 1) {
+      printf("bdbug: e\n");
+      return 0;
+    }
+    
+  }
+  else if(color == "white") {
+    /* white check location */
+    if(white_pieces[location] == 0) {
+      printf("wdbug: a\n");
+      return 0;
+    }
+
+    /* white check broken */
+    else if(white_pieces[0] != 0 && location != 0) {
+      printf("wdbug: b\n");
+      return 0;
+    }
+
+    /* white check broken moveable */
+    else if(location == 0 && white_pieces[0] != 0) {
+      int moveable = 0;
+    
+      for(i = 0; i < 4; i++) {
+	if(black_pieces[movements[i]] < 2) 
+	  moveable = 1;
+      }
+      
+      if(moveable == 0) {
+	printf("wdbug: c\n");
+	return 0;
+      }
+    }
+
+    /* white collecting */
+    else if(location + movement > 25) {
+      for(i = 18;  i > -1; i--) {
+	if(white_pieces[i] != 0) {
+	  printf("wdbug: d1\n");
+	  return 0;
+	}
+      }
+
+      if(location + movement > 24) {
+	for(i = location - 1; i > 18; i--) {
+	  if(white_pieces[i] != 0) {
+	    printf("wdbug: d1\n");	   
+	    return 0;
+	  }
 	}
       }
     }
 
-  }
-
-  /* black standart movement */
-  if(color == "black" && white_pieces[location - movement] >= 2)
-    return 0;
-
-  /* white check location */
-  if(color == "white" && white_pieces[location] == 0) {
-    printf("a\n");
-    return 0;
-  }
-
-  /* white check broken */
-  if(color == "white" && white_pieces[0] != 0 && location != 0)
-    return 0;
-
-  /* white check broken moveable */
-  if(color == "white" && location == 0 && white_pieces[0] != 0) {
-    int moveable = 0;
-    
-    for(i = 0; i < 4; i++) {
-      if(black_pieces[movements[i]] < 2)
-	moveable = 1;
-    }
-    
-    if(moveable == 0)
+    /* white standart movement */
+    else if(black_pieces[location + movement] > 1) {
+      printf("wdbug: e\n");  
       return 0;
-
-  }
-
-  /* white collecting */
-  if(color == "white" && location + movement > 25) {
-    for(i = 18;  i > -1; i--) {
-      if(white_pieces[i] != 0)
-	return 0;
-    }
-
-    if(location + movement > 24) {
-      for(i = location - 1; i > 18; i--) {
-	if(white_pieces[i] != 0)
-	  return 0;
-      }
     }
   }
-
-  /* white standart movement */
-  if(color == "white" && black_pieces[location + movement] >= 2)
-    return 0;
   
   return 1;
 }
@@ -569,13 +603,17 @@ void update_scores(int collected_black_pieces, int collected_white_pieces, int* 
 {
   if(collected_black_pieces == 15) {
     *black_score++;
+    printf("Black");
     if(collected_white_pieces == 0) /* mars */
       *black_score++;
   }
 
   if(collected_white_pieces == 15) {
     *white_score++;
+    printf("White");
     if(collected_black_pieces == 0) /* mars */
       *white_score++;
   }
+
+  printf(" scores! Black: %d, White: %d\n", *black_score, *white_score);
 }
