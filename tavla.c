@@ -30,7 +30,7 @@ void play_turn(int [], int [], int, int, int [], int*, int, int);
 void human_play(int [], int [], int, int, int [], const char*);
 void computer_play(int [], int [], int, int, int [], const char*);
 void move_piece(int [], int [], int, int, const char*);
-void update_scores(int, int, int*, int*);
+void update_scores(int, int, int*, int*, int*);
 
 /* MAIN FUNCTION */
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	play_turn(black_pieces, white_pieces, dice1, dice2, movements, &turn, is_black_human, is_white_human);
 	turn++;
       }
-      update_scores(black_pieces[0], white_pieces[25], &black_score, &white_score);
+      update_scores(black_pieces[0], white_pieces[25], &black_score, &white_score, &turn);
     }
   }
 
@@ -350,21 +350,6 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
       printf("bdbug: b\n");
       return 0;
     }
-    
-    /* black check broken moveable */
-    else if(location == 25 && black_pieces[25] != 0) {
-      int moveable = 0;
-    
-      for(i = 0; i < 4; i++) {
-	if(white_pieces[25 - movements[i]] < 2)
-	  moveable = 1;
-      }
-    
-      if(moveable == 0) {
-	printf("bdbug: c\n");
-	return 0;
-      }
-    }
 
     /* black collecting */
     else if(location - movement < 1) {
@@ -405,21 +390,6 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
     else if(white_pieces[0] != 0 && location != 0) {
       printf("wdbug: b\n");
       return 0;
-    }
-
-    /* white check broken moveable */
-    else if(location == 0 && white_pieces[0] != 0) {
-      int moveable = 0;
-    
-      for(i = 0; i < 4; i++) {
-	if(black_pieces[movements[i]] < 2) 
-	  moveable = 1;
-      }
-      
-      if(moveable == 0) {
-	printf("wdbug: c\n");
-	return 0;
-      }
     }
 
     /* white collecting */
@@ -599,20 +569,22 @@ void move_piece(int black_pieces [], int white_pieces [], int location, int move
   }
 }
 
-void update_scores(int collected_black_pieces, int collected_white_pieces, int* black_score, int* white_score)
+void update_scores(int collected_black_pieces, int collected_white_pieces, int* black_score, int* white_score, int* turn)
 {
   if(collected_black_pieces == 15) {
-    *black_score++;
+    *black_score += 1;
     printf("Black");
     if(collected_white_pieces == 0) /* mars */
-      *black_score++;
+      *black_score += 1;
+    *turn = 0;
   }
 
   if(collected_white_pieces == 15) {
-    *white_score++;
+    *white_score += 1;
     printf("White");
     if(collected_black_pieces == 0) /* mars */
-      *white_score++;
+      *white_score += 1;
+    *turn = 1;
   }
 
   printf(" scores! Black: %d, White: %d\n", *black_score, *white_score);
