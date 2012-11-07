@@ -116,7 +116,6 @@ void initialize_pieces(int black_pieces[], int white_pieces[])
   black_pieces[24] = 2;
   white_pieces[1] = 2;
 
-
   /* fill empty locations with zero  */
   int i;
   for(i = 0; i < LOCATIONS; i++) {
@@ -292,10 +291,25 @@ int any_movements_exist(int black_pieces[], int white_pieces[], int movements[],
 {
   if(movements[0] == 0 && movements[1] == 0 && movements[2] == 0 && movements[3] == 0)
     return 0;
-
+ 
   int i, j;
 
-  for(i = 0; i < LOCATIONS; i++) {
+  if(color == "black" && black_pieces[25] != 0) {
+    for(i = 0; i < 4; i++) {
+      printf("%d, %d, %d\n", i, movements[i], is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color));
+      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color))
+	 return 1;
+    }
+  }
+
+  if(color == "white" && white_pieces[0] != 0) {
+    for(i = 0; i < 4; i++) {
+      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color))
+	return 1;
+    }
+  }
+
+  for(i = 1; i < LOCATIONS - 1; i++) {
     for(j = 0; j < 4; j++) {
       if(is_available_movement(black_pieces, white_pieces, movements, i, movements[j], color))
 	return 1;
@@ -331,20 +345,23 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
     
     if(moveable == 0)
       return 0;
+  
   }
 
   /* black collecting */
-  if(color == "black" && location - movement <= 0) {
+  if(color == "black" && location - movement < 1) {
 
     for(i = 7; i < LOCATIONS; i++) {
-      if(black_pieces[i] != 0)
+      if(black_pieces[i] != 0) {
 	return 0;
+      }
     }
 
     if(movement > location) {
-      for(i = location; i < 7; i++) {
-	if(black_pieces[i] != 0)
+      for(i = location + 1; i < 7; i++) {
+	if(black_pieces[i] != 0) {
 	  return 0;
+	}
       }
     }
 
@@ -354,10 +371,11 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
   if(color == "black" && white_pieces[location - movement] >= 2)
     return 0;
 
-
   /* white check location */
-  if(color == "white" && white_pieces[location] == 0)
+  if(color == "white" && white_pieces[location] == 0) {
+    printf("a\n");
     return 0;
+  }
 
   /* white check broken */
   if(color == "white" && white_pieces[0] != 0 && location != 0)
@@ -374,17 +392,18 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
     
     if(moveable == 0)
       return 0;
+
   }
 
   /* white collecting */
-  if(color == "white" && location + movement >= 25) {
+  if(color == "white" && location + movement > 25) {
     for(i = 18;  i > -1; i--) {
       if(white_pieces[i] != 0)
 	return 0;
     }
 
-    if(location + movement > 25) {
-      for(i = location; i > 18; i--) {
+    if(location + movement > 24) {
+      for(i = location - 1; i > 18; i--) {
 	if(white_pieces[i] != 0)
 	  return 0;
       }
@@ -394,7 +413,7 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
   /* white standart movement */
   if(color == "white" && black_pieces[location + movement] >= 2)
     return 0;
-
+  
   return 1;
 }
 
@@ -429,7 +448,7 @@ void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, 
   if(!any_movements_exist(black_pieces, white_pieces, movements, color)) {
     print_board(black_pieces, white_pieces);
     print_info(dice1, dice2, movements, black_pieces[25], black_pieces[0], white_pieces[0], white_pieces[25]);
-    printf("%s's turn. No available movement.\n\n");
+    printf("%s's turn. No available movement.\n\n", color);
   }
 
   while(any_movements_exist(black_pieces, white_pieces, movements, color)) {
@@ -472,7 +491,7 @@ void computer_play(int black_pieces [], int white_pieces [], int dice1, int dice
   if(!any_movements_exist(black_pieces, white_pieces, movements, color)) {
     print_board(black_pieces, white_pieces);
     print_info(dice1, dice2, movements, black_pieces[25], black_pieces[0], white_pieces[0], white_pieces[25]);
-    printf("%s's turn. No available movement.\n\n");
+    printf("%s's turn. No available movement.\n\n", color);
   }
 
   while(any_movements_exist(black_pieces, white_pieces, movements, color)) {
