@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 /* CONSTANT DEFINITIONS */
@@ -26,11 +27,12 @@ void print_info(int, int, int [], int, int, int, int);
 void throw_dices(int*, int*);
 void update_movements(int, int, int []);
 int any_movements_exist(int [], int [], int [], const char*);
-int is_available_move(int [], int [], int [], int, int, const char*);
+int is_available_movement(int [], int [], int [], int, int, const char*);
 
 void play_turn(int [], int [], int, int, int [], int*, int, int);
 void human_play(int [], int [], int, int, int [], const char*);
 void computer_play(int [], int [], int, int, int [], const char*);
+int play_first_move(int [], int [], int [], const char*);
 void move_piece(int [], int [], int, int, const char*);
 void update_scores(int, int, int*, int*, int*);
 
@@ -293,7 +295,7 @@ void print_side(const char* side)
 {
   int i;
   
-  if(side == "top") {
+  if(!strcmp(side, "top")) {
     printf("%40sWhite Home Base\n", "");
     for(i = 13; i < 25; i++) {
       if(i % 6 == 1)
@@ -315,7 +317,7 @@ void print_side(const char* side)
   printf("||||\n");
   
 
-  if(side == "bottom") {
+  if(!strcmp(side, "bottom")) {
     for(i = 12; i > 0; i--) {
       if(i % 6 == 0)
 	printf("%6s", "");
@@ -377,16 +379,16 @@ int any_movements_exist(int black_pieces[], int white_pieces[], int movements[],
  
   int i, j;
 
-  if(color == "black" && black_pieces[25] != 0) {
+  if(!strcmp(color, "black") && black_pieces[25] != 0) {
     for(i = 0; i < 4; i++) {
       if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color))
 	return 1;
     }
   }
 
-  if(color == "white" && white_pieces[0] != 0) {
+  if(!strcmp(color, "white") && white_pieces[0] != 0) {
     for(i = 0; i < 4; i++) {
-      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color))
+      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color) == 1)
 	return 1;
     }
   }
@@ -409,7 +411,7 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
   if(movement != movements[0] && movement != movements[1] && movement != movements[2] && movement != movements[3])
     return 0;
 
-  if(color == "black") {
+  if(!strcmp(color, "black")) {
     /* black check location */
     if(black_pieces[location] == 0)
       return 0;
@@ -440,7 +442,7 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
       return 0;
       
   }
-  else if(color == "white") {
+  else if(!strcmp(color, "white")) {
     /* white check location */
     if(white_pieces[location] == 0)
       return 0;
@@ -567,7 +569,7 @@ int play_first_move(int black_pieces[], int white_pieces[], int movements[], con
 
   for(i = 0, j = 25; i < LOCATIONS; i++, j--) {
     for(k = 0; k < 4; k++) {
-      if(color == "black") {
+      if(!strcmp(color, "black")) {
 	if(is_available_movement(black_pieces, white_pieces, movements, j, movements[k], color) && movements[k] != 0) {
 	  printf("  Enter location: %d\n", j);
 	  printf("  Enter movement: %d\n", movements[k]);
@@ -576,7 +578,7 @@ int play_first_move(int black_pieces[], int white_pieces[], int movements[], con
 	  return 1;
 	}
       }
-      else if(color == "white") {
+      else if(!strcmp(color, "white")) {
 	if(is_available_movement(black_pieces, white_pieces, movements, i, movements[k], color) && movements[k] != 0) {	
 	  printf("  %s: %d\n  %s: %d\n",
 		 "Enter location", i,
@@ -594,7 +596,7 @@ int play_first_move(int black_pieces[], int white_pieces[], int movements[], con
 
 void move_piece(int black_pieces [], int white_pieces [], int location, int movement, const char* color)
 {
-  if(color == "black") {
+  if(!strcmp(color, "black")) {
     black_pieces[location] -= 1;
     if(movement > location) {
       black_pieces[0] += 1;
@@ -608,7 +610,7 @@ void move_piece(int black_pieces [], int white_pieces [], int location, int move
     }
   }
   
-  if(color == "white") {
+  if(!strcmp(color, "white")) {
     white_pieces[location] -= 1;
     if(movement + location > 25) {
       white_pieces[25] += 1;
