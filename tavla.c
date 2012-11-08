@@ -12,8 +12,10 @@
 void welcome();
 void goodbye();
 
+void select_game_type(int*, int*);
 void initialize_pieces(int [], int []);
 void initialize_game(int*, int*, int, int, int*);
+void game_over(int, int, int*);
 
 void print_board(int [], int []);
 int get_maximum_piece(int [], int[]);
@@ -47,20 +49,20 @@ int main(int argc, char *argv[])
   int turn; /* turn % 2 == 0 means black's turn, turn % 2 == 1 means white's turn */
   int movements[4]; /* movements rights caused by dice rolling process */
 
-  int is_black_human = 1; 
-  int is_white_human = 0;
+  int is_black_human; 
+  int is_white_human;
 
-  char response;
+  int play_again;
 
   srand(time(NULL));
 
   welcome();
   
-  printf("Do you want to play? [y/n]: ");
-  scanf("%c", &response);
-
   /* main loop */
-  while(response == 'y') {
+  do {
+    /* game type selection */
+    select_game_type(&is_black_human, &is_white_human);
+
     /* game initialization */
     initialize_game(&black_score, &white_score, dice1, dice2, &turn);
 
@@ -72,11 +74,11 @@ int main(int argc, char *argv[])
 	throw_dices(&dice1, &dice2);
 	update_movements(dice1, dice2, movements);
 	play_turn(black_pieces, white_pieces, dice1, dice2, movements, &turn, is_black_human, is_white_human);
-	turn++;
       }
       update_scores(black_pieces[0], white_pieces[25], &black_score, &white_score, &turn);
     }
-  }
+    game_over(black_score, white_score, &play_again);
+  } while(play_again);
 
   goodbye();
   return 0;
@@ -102,6 +104,66 @@ void welcome()
 void goodbye()
 {
   printf("\nThanks for playing.\n");
+}
+
+void select_game_type(int* is_black_human, int* is_white_human)
+{
+  int game_type;
+  int color;
+
+  do {
+    printf("%s\n  %s\n  %s\n  %s\n%s",
+	   "Select Game Type",
+	   "0. Human vs. Human Game",
+	   "1. Human vs. Computer Game",
+	   "2. Computer vs. Computer Game",
+	   "Enter game type (0, 1 or 2): ");
+
+    scanf("%d", &game_type);
+
+    if(game_type != 0 && game_type != 1 && game_type != 2)
+      printf("Invalid selection. Please try again.\n");
+
+    printf("\n");
+
+  } while(game_type != 0 && game_type != 1 && game_type != 2);
+
+  if(game_type == 0) {
+    *is_black_human = 1;
+    *is_white_human = 1;
+  }
+  else if(game_type == 1) {
+    do {
+      printf("%s\n  %s\n  %s\n%s",
+	     "Select Color",
+	     "0. Black",
+	     "1. White",
+	     "Enter color (0 or 1): ");
+
+      scanf("%d", &color);
+
+      if(color != 0 && color != 1)
+	printf("Invalid selection. Please try again.\n");
+
+      printf("\n");
+
+    } while(color != 0 && color != 1);
+
+    if(color == 0) {
+      *is_black_human = 1;
+      *is_white_human = 0;
+    }
+    else if(color == 1) {
+      *is_black_human = 0;
+      *is_white_human = 1;
+    }
+
+  }
+  else if(color == 2) {
+    *is_black_human = 0;
+    *is_white_human = 0;
+  }
+
 }
 
 void initialize_pieces(int black_pieces[], int white_pieces[])
@@ -152,6 +214,25 @@ void initialize_game(int* black_score, int* white_score, int dice1, int dice2, i
     }
 
     printf(" starts.\n");
+}
+
+void game_over(int black_score, int white_score, int* play_again)
+{
+  printf("\n%s\n  %s%d\n  %s%d\n",
+	 "Game Over.",
+	 "Black: ", black_score,
+	 "White: ", white_score);
+
+  if(black_score > white_score)
+    printf("Black");
+  else if(black_score < white_score)
+    printf("White");
+
+  printf(" player won!\n\n");
+
+  printf("If you want to play again, enter 1: ");
+  scanf("%d", play_again);
+  printf("\n");
 }
 
 void print_board(int black_pieces[], int white_pieces[])
@@ -205,7 +286,7 @@ int get_lines_length(int max_piece)
   if (max_piece < 15)
     return 14;
 
-  return max_piece;
+  return max_piece + 1;
 }
 
 void print_side(const char* side)
@@ -289,7 +370,6 @@ void update_movements(int dice1, int dice2, int movements[])
   }
 }
 
-/* FIXME */
 int any_movements_exist(int black_pieces[], int white_pieces[], int movements[], const char* color)
 {
   if(movements[0] == 0 && movements[1] == 0 && movements[2] == 0 && movements[3] == 0)
@@ -299,29 +379,22 @@ int any_movements_exist(int black_pieces[], int white_pieces[], int movements[],
 
   if(color == "black" && black_pieces[25] != 0) {
     for(i = 0; i < 4; i++) {
-      printf("%d, %d, %d\n", i, movements[i], is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color));
-      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color)) {
-	printf("yep: %d, %d\n", 25, movements[i]); 
+      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color))
 	return 1;
-      }
     }
   }
 
   if(color == "white" && white_pieces[0] != 0) {
     for(i = 0; i < 4; i++) {
-      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color)) {
-	printf("yep: %d, %d\n", 0, movements[i]);
+      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color))
 	return 1;
-      }
     }
   }
 
   for(i = 1; i < LOCATIONS - 1; i++) {
     for(j = 0; j < 4; j++) {
-      if(is_available_movement(black_pieces, white_pieces, movements, i, movements[j], color)) {
-	printf("yup: %d, %d\n", i, movements[j]);
+      if(is_available_movement(black_pieces, white_pieces, movements, i, movements[j], color))
 	return 1;
-      }
     }
   }
 
@@ -333,87 +406,66 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
   int i;
 
   /* check movements */
-  if(movement != movements[0] && movement != movements[1] && movement != movements[2] && movement != movements[3]) {
-    printf("common debug.\n");
+  if(movement != movements[0] && movement != movements[1] && movement != movements[2] && movement != movements[3])
     return 0;
-  }
 
   if(color == "black") {
     /* black check location */
-    if(black_pieces[location] == 0) {
-      printf("bdbug: a\n");
+    if(black_pieces[location] == 0)
       return 0;
-    }
 
     /* black check broken */
-    else if(black_pieces[25] != 0 && location != 25) {
-      printf("bdbug: b\n");
+    else if(black_pieces[25] != 0 && location != 25)
       return 0;
-    }
 
     /* black collecting */
     else if(location - movement < 1) {
       
       for(i = 7; i < LOCATIONS; i++) {
-	if(black_pieces[i] != 0) {
-	  printf("bdbug: d1\n");
+	if(black_pieces[i] != 0)
 	  return 0;
-	}
       }
       
       if(movement > location) {
 	for(i = location + 1; i < 7; i++) {
-	  if(black_pieces[i] != 0) {
-	    printf("bdbug: d2\n");
+	  if(black_pieces[i] != 0)
 	    return 0;
-	  }
 	}
       }
       
     }
     
     /* black standart movement */
-    else if(white_pieces[location - movement] > 1) {
-      printf("bdbug: e\n");
+    else if(white_pieces[location - movement] > 1)
       return 0;
-    }
-    
+      
   }
   else if(color == "white") {
     /* white check location */
-    if(white_pieces[location] == 0) {
-      printf("wdbug: a\n");
+    if(white_pieces[location] == 0)
       return 0;
-    }
 
     /* white check broken */
-    else if(white_pieces[0] != 0 && location != 0) {
-      printf("wdbug: b\n");
+    else if(white_pieces[0] != 0 && location != 0)
       return 0;
-    }
 
     /* white collecting */
     else if(location + movement > 25) {
       for(i = 18;  i > -1; i--) {
-	if(white_pieces[i] != 0) {
-	  printf("wdbug: d1\n");
+	if(white_pieces[i] != 0)
 	  return 0;
-	}
       }
 
       if(location + movement > 24) {
 	for(i = location - 1; i > 18; i--) {
-	  if(white_pieces[i] != 0) {
-	    printf("wdbug: d1\n");	   
+	  if(white_pieces[i] != 0)
 	    return 0;
-	  }
 	}
       }
     }
 
     /* white standart movement */
     else if(black_pieces[location + movement] > 1) {
-      printf("wdbug: e\n");  
       return 0;
     }
   }
@@ -438,6 +490,8 @@ void play_turn(int black_pieces[], int white_pieces[], int dice1, int dice2, int
   if(is_white_human == 0 && *turn % 2 == 1) {
     computer_play(black_pieces, white_pieces, dice1, dice2, movements, "white");
   }
+
+  *turn = *turn + 1;
 }
 
 void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char* color)
