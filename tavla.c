@@ -161,9 +161,10 @@ void select_game_type(int* is_black_human, int* is_white_human)
     }
 
   }
-  else if(color == 2) {
+  else if(game_type == 2) {
     *is_black_human = 0;
     *is_white_human = 0;
+    printf("heey");
   }
 
 }
