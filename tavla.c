@@ -31,7 +31,7 @@ int is_available_movement(int [], int [], int [], int, int, const char*);
 
 void play_turn(int [], int [], int, int, int [], int*, int, int);
 void human_play(int [], int [], int, int, int [], const char*);
-void computer_play(int [], int [], int, int, int [], const char*);
+void computer_play_noob(int [], int [], int, int, int [], const char*);
 int play_first_move(int [], int [], int [], const char*);
 void move_piece(int [], int [], int, int, const char*);
 void update_scores(int, int, int*, int*, int*);
@@ -483,7 +483,7 @@ void play_turn(int black_pieces[], int white_pieces[], int dice1, int dice2, int
   }
 
   if(is_black_human == 0 && *turn %2 == 0) {
-    computer_play(black_pieces, white_pieces, dice1, dice2, movements, "black");
+    computer_play_noob(black_pieces, white_pieces, dice1, dice2, movements, "black");
   }
 
   if(is_white_human == 1 && *turn % 2 == 1) {
@@ -491,7 +491,7 @@ void play_turn(int black_pieces[], int white_pieces[], int dice1, int dice2, int
   }
 
   if(is_white_human == 0 && *turn % 2 == 1) {
-    computer_play(black_pieces, white_pieces, dice1, dice2, movements, "white");
+    computer_play_noob(black_pieces, white_pieces, dice1, dice2, movements, "white");
   }
 
   *turn = *turn + 1;
@@ -540,7 +540,7 @@ void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, 
   }
 }
 
-void computer_play(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char* color)
+void computer_play_noob(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char* color)
 {
   /* counter */
   int i, j, k;
