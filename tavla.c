@@ -8,7 +8,7 @@
 #define PIECES 30
 #define LOCATIONS 26
 
-/* FUNCTION DECLERATIONS */
+/* FUNCTION PROTOTYPES */
 
 void welcome();
 void goodbye();
