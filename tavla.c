@@ -75,9 +75,12 @@ int main(int argc, char *argv[])
       while(black_pieces[0] != 15 && white_pieces[25] != 15) {
 	throw_dices(&dice1, &dice2);
 	update_movements(dice1, dice2, movements);
-	play_turn(black_pieces, white_pieces, dice1, dice2, movements, &turn, is_black_human, is_white_human);
-      }
-      update_scores(black_pieces[0], white_pieces[25], &black_score, &white_score, &turn);
+	play_turn(black_pieces, white_pieces, dice1, dice2,
+		  movements, &turn, is_black_human, is_white_human);
+      
+      }  
+      update_scores(black_pieces[0], white_pieces[25],
+		    &black_score, &white_score, &turn);
     }
     game_over(black_score, white_score, &play_again);
   } while(play_again);
@@ -193,7 +196,8 @@ void initialize_pieces(int black_pieces[], int white_pieces[])
   }
 }
 
-void initialize_game(int *black_score, int *white_score, int dice1, int dice2, int *turn)
+void initialize_game(int *black_score, int *white_score,
+		     int dice1, int dice2, int *turn)
 {
     *black_score = 0;
     *white_score = 0;
@@ -202,8 +206,8 @@ void initialize_game(int *black_score, int *white_score, int dice1, int dice2, i
       printf("\nThrowing dices.");
       throw_dices(&dice1, &dice2);
       printf("\n%s%d\n%s%d\n",
-	     "  Black (human): ", dice1,
-	     "  White (computer): ", dice2);
+	     "  Black: ", dice1,
+	     "  White: ", dice2);
     } while(dice1 == dice2);
 
     if(dice1 > dice2) {
@@ -242,7 +246,7 @@ void print_board(int black_pieces[], int white_pieces[])
   /* counters  */
   int i, j, k;
   
-  const int limit = get_lines_length(get_maximum_piece(black_pieces, white_pieces));
+  int limit = get_lines_length(get_maximum_piece(black_pieces, white_pieces));
 
   print_side("top");
   
@@ -275,7 +279,12 @@ int get_maximum_piece(int black_pieces[], int white_pieces[])
   int max_piece = 0;
 
   for(i = 1; i < LOCATIONS / 2 - 1; i++) {
-    hold = black_pieces[i] + white_pieces[i] + black_pieces[LOCATIONS - 1 - i] + white_pieces[LOCATIONS - 1 - i];
+    hold = 0;
+    hold += black_pieces[i];
+    hold += white_pieces[i];
+    hold += black_pieces[LOCATIONS - 1 - i];
+    hold += white_pieces[LOCATIONS - 1 - i];
+    
     if(hold > max_piece)
       max_piece = hold;
   }
@@ -330,13 +339,18 @@ void print_side(const char *side)
   }
 }
 
-void print_info(int dice1, int dice2, int movements[], int broken_black, int collected_black, int broken_white, int collected_white)
+void print_info(int dice1, int dice2, int movements[], int broken_black,
+		int collected_black, int broken_white, int collected_white)
 {
   int i;
 
   printf("\n%s%d%s%d%s%d\n%s%d%s%d%s%d%s",
-	 "Broken Blacks: ", broken_black, " Collected Blacks: ", collected_black, " 1st Dice: ", dice1,
-	 "Broken Whites: ", broken_white, " Collected Whites: ", collected_white, " 2nd Dice: ", dice2,
+	 "Broken Blacks: ", broken_black, 
+	 " Collected Blacks: ", collected_black, 
+	 " 1st Dice: ", dice1,
+	 "Broken Whites: ", broken_white, 
+	 " Collected Whites: ", collected_white, 
+	 " 2nd Dice: ", dice2,
 	 " Movements: ");
 
   for(i = 0; i < 4; i++) {
@@ -372,30 +386,37 @@ void update_movements(int dice1, int dice2, int movements[])
   }
 }
 
-int any_movements_exist(int black_pieces[], int white_pieces[], int movements[], const char *color)
+int any_movements_exist(int black_pieces[], int white_pieces[],
+			int movements[], const char *color)
 {
-  if(movements[0] == 0 && movements[1] == 0 && movements[2] == 0 && movements[3] == 0)
+  if(movements[0] == 0 && movements[1] == 0 &&
+     movements[2] == 0 && movements[3] == 0)
     return 0;
  
   int i, j;
 
   if(!strcmp(color, "black") && black_pieces[25] != 0) {
     for(i = 0; i < 4; i++) {
-      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 25, movements[i], color))
+      if(is_available_movement(black_pieces, white_pieces,
+			       movements, 25, movements[i],
+			       color) && movements[i] != 0)
 	return 1;
     }
   }
 
   if(!strcmp(color, "white") && white_pieces[0] != 0) {
     for(i = 0; i < 4; i++) {
-      if(movements[i] != 0 && is_available_movement(black_pieces, white_pieces, movements, 0, movements[i], color) == 1)
+      if(movements[i] != 0 && 
+	 is_available_movement(black_pieces, white_pieces,
+			       movements, 0, movements[i], color))
 	return 1;
     }
   }
 
   for(i = 1; i < LOCATIONS - 1; i++) {
     for(j = 0; j < 4; j++) {
-      if(is_available_movement(black_pieces, white_pieces, movements, i, movements[j], color))
+      if(is_available_movement(black_pieces, white_pieces, 
+			       movements, i, movements[j], color))
 	return 1;
     }
   }
@@ -403,12 +424,15 @@ int any_movements_exist(int black_pieces[], int white_pieces[], int movements[],
   return 0;
 }
 
-int is_available_movement(int black_pieces[], int white_pieces[], int movements[], int location, int movement, const char *color)
+int is_available_movement(int black_pieces[], int white_pieces[],
+			  int movements[], int location,
+			  int movement, const char *color)
 {
   int i;
 
   /* check movements */
-  if(movement != movements[0] && movement != movements[1] && movement != movements[2] && movement != movements[3])
+  if(movement != movements[0] && movement != movements[1] && 
+     movement != movements[2] && movement != movements[3])
     return 0;
 
   if(!strcmp(color, "black")) {
@@ -475,28 +499,35 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
   return 1;
 }
 
-void play_turn(int black_pieces[], int white_pieces[], int dice1, int dice2, int movements[], int *turn, int is_black_human, int is_white_human)
+void play_turn(int black_pieces[], int white_pieces[],
+	       int dice1, int dice2, int movements[],
+	       int *turn, int is_black_human, int is_white_human)
 {
   if(is_black_human == 1 && *turn % 2 == 0) {
-    human_play(black_pieces, white_pieces, dice1, dice2, movements, "black");
+    human_play(black_pieces, white_pieces,
+	       dice1, dice2, movements, "black");
   }
 
   if(is_black_human == 0 && *turn %2 == 0) {
-    computer_play_noob(black_pieces, white_pieces, dice1, dice2, movements, "black");
+    computer_play_noob(black_pieces, white_pieces,
+		       dice1, dice2, movements, "black");
   }
 
   if(is_white_human == 1 && *turn % 2 == 1) {
-    human_play(black_pieces, white_pieces, dice1, dice2, movements, "white");
+    human_play(black_pieces, white_pieces,
+	       dice1, dice2, movements, "white");
   }
 
   if(is_white_human == 0 && *turn % 2 == 1) {
-    computer_play_noob(black_pieces, white_pieces, dice1, dice2, movements, "white");
+    computer_play_noob(black_pieces, white_pieces,
+		       dice1, dice2, movements, "white");
   }
 
   *turn = *turn + 1;
 }
 
-void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char *color)
+void human_play(int black_pieces [], int white_pieces [], int dice1,
+		int dice2, int movements [], const char *color)
 {
   /* counter */
   int i;
@@ -507,13 +538,17 @@ void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, 
 
   if(!any_movements_exist(black_pieces, white_pieces, movements, color)) {
     print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements, black_pieces[25], black_pieces[0], white_pieces[0], white_pieces[25]);
+    print_info(dice1, dice2, movements,
+	       black_pieces[25], black_pieces[0], 
+	       white_pieces[0], white_pieces[25]);
     printf("%s's turn. No available movement.\n\n", color);
   }
 
   while(any_movements_exist(black_pieces, white_pieces, movements, color)) {
     print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements, black_pieces[25], black_pieces[0], white_pieces[0], white_pieces[25]);
+    print_info(dice1, dice2, movements,
+	       black_pieces[25], black_pieces[0],
+	       white_pieces[0], white_pieces[25]);
     
     do {
       printf("%s's turn.\n", color);
@@ -522,10 +557,12 @@ void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, 
       printf("  Enter movement: ");
       scanf("%d", &movement);
 
-      if(!is_available_movement(black_pieces, white_pieces, movements, location, movement, color))
+      if(!is_available_movement(black_pieces, white_pieces, 
+				movements, location, movement, color))
 	printf("Invalid movement. Please try again.\n\n");
 
-    } while(!is_available_movement(black_pieces, white_pieces, movements, location, movement, color));
+    } while(!is_available_movement(black_pieces, white_pieces, movements,
+				   location, movement, color));
     
     move_piece(black_pieces, white_pieces, location, movement, color);
 
@@ -539,7 +576,8 @@ void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, 
   }
 }
 
-void computer_play_noob(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char *color)
+void computer_play_noob(int black_pieces [], int white_pieces [], int dice1,
+			int dice2, int movements [], const char *color)
 {
   /* counter */
   int i, j, k;
@@ -550,18 +588,23 @@ void computer_play_noob(int black_pieces [], int white_pieces [], int dice1, int
 
   if(!any_movements_exist(black_pieces, white_pieces, movements, color)) {
     print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements, black_pieces[25], black_pieces[0], white_pieces[0], white_pieces[25]);
+    print_info(dice1, dice2, movements,
+	       black_pieces[25], black_pieces[0],
+	       white_pieces[0], white_pieces[25]);
     printf("%s's turn. No available movement.\n\n", color);
   }
 
   while(any_movements_exist(black_pieces, white_pieces, movements, color)) {
     print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements, black_pieces[25], black_pieces[0], white_pieces[0], white_pieces[25]);
+    print_info(dice1, dice2, movements,
+	       black_pieces[25], black_pieces[0],
+	       white_pieces[0], white_pieces[25]);
     play_first_move(black_pieces, white_pieces, movements, color);
   }
 }
 
-int play_first_move(int black_pieces[], int white_pieces[], int movements[], const char *color)
+int play_first_move(int black_pieces[], int white_pieces[],
+		    int movements[], const char *color)
 {
   int i, j, k;
   
@@ -570,7 +613,8 @@ int play_first_move(int black_pieces[], int white_pieces[], int movements[], con
   for(i = 0, j = 25; i < LOCATIONS; i++, j--) {
     for(k = 0; k < 4; k++) {
       if(!strcmp(color, "black")) {
-	if(is_available_movement(black_pieces, white_pieces, movements, j, movements[k], color) && movements[k] != 0) {
+	if(is_available_movement(black_pieces, white_pieces, movements,
+				 j, movements[k], color) && movements[k] != 0) {
 	  printf("  Enter location: %d\n", j);
 	  printf("  Enter movement: %d\n", movements[k]);
 	  move_piece(black_pieces, white_pieces, j, movements[k], color);
@@ -579,7 +623,8 @@ int play_first_move(int black_pieces[], int white_pieces[], int movements[], con
 	}
       }
       else if(!strcmp(color, "white")) {
-	if(is_available_movement(black_pieces, white_pieces, movements, i, movements[k], color) && movements[k] != 0) {	
+	if(is_available_movement(black_pieces, white_pieces, movements,
+				 i, movements[k], color) && movements[k] != 0) {	
 	  printf("  %s: %d\n  %s: %d\n",
 		 "Enter location", i,
 		 "Enter movement", movements[k]);
@@ -594,7 +639,8 @@ int play_first_move(int black_pieces[], int white_pieces[], int movements[], con
   return 0;
 }
 
-void move_piece(int black_pieces [], int white_pieces [], int location, int movement, const char *color)
+void move_piece(int black_pieces [], int white_pieces [],
+		int location, int movement, const char *color)
 {
   if(!strcmp(color, "black")) {
     black_pieces[location] -= 1;
@@ -625,7 +671,8 @@ void move_piece(int black_pieces [], int white_pieces [], int location, int move
   }
 }
 
-void update_scores(int collected_black_pieces, int collected_white_pieces, int *black_score, int *white_score, int *turn)
+void update_scores(int collected_black_pieces, int collected_white_pieces,
+		   int *black_score, int *white_score, int *turn)
 {
   if(collected_black_pieces == 15) {
     *black_score += 1;
