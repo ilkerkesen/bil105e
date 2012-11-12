@@ -13,28 +13,28 @@
 void welcome();
 void goodbye();
 
-void select_game_type(int*, int*);
+void select_game_type(int *, int *);
 void initialize_pieces(int [], int []);
-void initialize_game(int*, int*, int, int, int*);
-void game_over(int, int, int*);
+void initialize_game(int *, int *, int, int, int *);
+void game_over(int, int, int *);
 
 void print_board(int [], int []);
 int get_maximum_piece(int [], int[]);
 int get_lines_length(int);
-void print_side(const char*);
+void print_side(const char *);
 void print_info(int, int, int [], int, int, int, int);
 
-void throw_dices(int*, int*);
+void throw_dices(int *, int *);
 void update_movements(int, int, int []);
-int any_movements_exist(int [], int [], int [], const char*);
-int is_available_movement(int [], int [], int [], int, int, const char*);
+int any_movements_exist(int [], int [], int [], const char *);
+int is_available_movement(int [], int [], int [], int, int, const char *);
 
-void play_turn(int [], int [], int, int, int [], int*, int, int);
-void human_play(int [], int [], int, int, int [], const char*);
-void computer_play_noob(int [], int [], int, int, int [], const char*);
-int play_first_move(int [], int [], int [], const char*);
-void move_piece(int [], int [], int, int, const char*);
-void update_scores(int, int, int*, int*, int*);
+void play_turn(int [], int [], int, int, int [], int *, int, int);
+void human_play(int [], int [], int, int, int [], const char *);
+void computer_play_noob(int [], int [], int, int, int [], const char *);
+int play_first_move(int [], int [], int [], const char *);
+void move_piece(int [], int [], int, int, const char *);
+void update_scores(int, int, int *, int *, int *);
 
 /* MAIN FUNCTION */
 
@@ -108,7 +108,7 @@ void goodbye()
   printf("\nThanks for playing.\n");
 }
 
-void select_game_type(int* is_black_human, int* is_white_human)
+void select_game_type(int *is_black_human, int *is_white_human)
 {
   int game_type;
   int color;
@@ -164,7 +164,6 @@ void select_game_type(int* is_black_human, int* is_white_human)
   else if(game_type == 2) {
     *is_black_human = 0;
     *is_white_human = 0;
-    printf("heey");
   }
 
 }
@@ -194,7 +193,7 @@ void initialize_pieces(int black_pieces[], int white_pieces[])
   }
 }
 
-void initialize_game(int* black_score, int* white_score, int dice1, int dice2, int* turn)
+void initialize_game(int *black_score, int *white_score, int dice1, int dice2, int *turn)
 {
     *black_score = 0;
     *white_score = 0;
@@ -219,7 +218,7 @@ void initialize_game(int* black_score, int* white_score, int dice1, int dice2, i
     printf(" starts.\n");
 }
 
-void game_over(int black_score, int white_score, int* play_again)
+void game_over(int black_score, int white_score, int *play_again)
 {
   printf("\n%s\n  %s%d\n  %s%d\n",
 	 "Game Over.",
@@ -292,7 +291,7 @@ int get_lines_length(int max_piece)
   return max_piece + 1;
 }
 
-void print_side(const char* side)
+void print_side(const char *side)
 {
   int i;
   
@@ -349,7 +348,7 @@ void print_info(int dice1, int dice2, int movements[], int broken_black, int col
 
 }
 
-void throw_dices(int* dice1, int* dice2)
+void throw_dices(int *dice1, int *dice2)
 {
   *dice1 = rand() % 6 + 1;
   *dice2 = rand() % 6 + 1;
@@ -373,7 +372,7 @@ void update_movements(int dice1, int dice2, int movements[])
   }
 }
 
-int any_movements_exist(int black_pieces[], int white_pieces[], int movements[], const char* color)
+int any_movements_exist(int black_pieces[], int white_pieces[], int movements[], const char *color)
 {
   if(movements[0] == 0 && movements[1] == 0 && movements[2] == 0 && movements[3] == 0)
     return 0;
@@ -404,7 +403,7 @@ int any_movements_exist(int black_pieces[], int white_pieces[], int movements[],
   return 0;
 }
 
-int is_available_movement(int black_pieces[], int white_pieces[], int movements[], int location, int movement, const char* color)
+int is_available_movement(int black_pieces[], int white_pieces[], int movements[], int location, int movement, const char *color)
 {
   int i;
 
@@ -476,7 +475,7 @@ int is_available_movement(int black_pieces[], int white_pieces[], int movements[
   return 1;
 }
 
-void play_turn(int black_pieces[], int white_pieces[], int dice1, int dice2, int movements[], int* turn, int is_black_human, int is_white_human)
+void play_turn(int black_pieces[], int white_pieces[], int dice1, int dice2, int movements[], int *turn, int is_black_human, int is_white_human)
 {
   if(is_black_human == 1 && *turn % 2 == 0) {
     human_play(black_pieces, white_pieces, dice1, dice2, movements, "black");
@@ -497,7 +496,7 @@ void play_turn(int black_pieces[], int white_pieces[], int dice1, int dice2, int
   *turn = *turn + 1;
 }
 
-void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char* color)
+void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char *color)
 {
   /* counter */
   int i;
@@ -540,7 +539,7 @@ void human_play(int black_pieces [], int white_pieces [], int dice1, int dice2, 
   }
 }
 
-void computer_play_noob(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char* color)
+void computer_play_noob(int black_pieces [], int white_pieces [], int dice1, int dice2, int movements [], const char *color)
 {
   /* counter */
   int i, j, k;
@@ -562,7 +561,7 @@ void computer_play_noob(int black_pieces [], int white_pieces [], int dice1, int
   }
 }
 
-int play_first_move(int black_pieces[], int white_pieces[], int movements[], const char* color)
+int play_first_move(int black_pieces[], int white_pieces[], int movements[], const char *color)
 {
   int i, j, k;
   
@@ -595,7 +594,7 @@ int play_first_move(int black_pieces[], int white_pieces[], int movements[], con
   return 0;
 }
 
-void move_piece(int black_pieces [], int white_pieces [], int location, int movement, const char* color)
+void move_piece(int black_pieces [], int white_pieces [], int location, int movement, const char *color)
 {
   if(!strcmp(color, "black")) {
     black_pieces[location] -= 1;
@@ -626,7 +625,7 @@ void move_piece(int black_pieces [], int white_pieces [], int location, int move
   }
 }
 
-void update_scores(int collected_black_pieces, int collected_white_pieces, int* black_score, int* white_score, int* turn)
+void update_scores(int collected_black_pieces, int collected_white_pieces, int *black_score, int *white_score, int *turn)
 {
   if(collected_black_pieces == 15) {
     *black_score += 1;
