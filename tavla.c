@@ -28,19 +28,6 @@
  *
  *     If you want to get involved about algorithm, just read the code. 
  *
- *   Libraries
- *     stdio
- *       - printf
- *       - scanf
- *     stdlib
- *       - rand
- *       - srand
- *     string
- *       - strcmp
- *     time
- *       - time
- *
- *
  *   Building (I will generate a Makefile in the future)
  *     on Linux: compile it with gcc or clang (gcc tavla.c or clang tavla.c)
  *     on Windows: just compile it with your IDE (Dev-C++/mingw32 works fine)
