@@ -192,7 +192,7 @@ void welcome()
 {
   /* Prints information about game at start. */
 
-  printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n",
+  printf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n", 
 	 "///////////////////////////////////////////////////",
 	 "//                                               //",
 	 "//   Tavla (backgammon) game, homework project   //",
@@ -203,6 +203,12 @@ void welcome()
 	 "//   Dice: enter the dice you want to play       //",
 	 "//                                               //",
 	 "///////////////////////////////////////////////////");
+
+  printf("%s\n%s\n%s\n%s\n\n",
+	 "Hint about broken pieces",
+	 " If there are any broken pieces, then you must move",	 
+	 " broken piece first. 25 is location for broken black",
+	 " pieces, 0 is for broken white pieces.              ");
 }
 
 void goodbye()
