@@ -507,7 +507,9 @@ int get_maximum_piece(int black_pieces[], int white_pieces[])
   /* evulate max piece on a location and its opposite location */
   int i;
   int hold;
-  int max_piece = 0;
+  int max_piece;
+
+  max_piece = 0;
 
   for(i = 1; i < LOCATIONS / 2 - 1; i++) {
     hold = 0;
