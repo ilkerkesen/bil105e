@@ -462,7 +462,7 @@ void print_board(int black_pieces[], int white_pieces[], int dice1, int dice2, i
       if(k == 18 || k == 24 || j == 7 || j == 1)
 	printf("%3s||||", "");
     }
-
+    /* print information about white pieces */
     if(i == 0)
       printf("  White Pieces");
     
@@ -472,6 +472,7 @@ void print_board(int black_pieces[], int white_pieces[], int dice1, int dice2, i
     if(i == 2)
       printf("    Collected: %d", white_pieces[25]);
 
+    /* print movements and dices information in middle row */
     if(i == limit / 2 - 1)
       printf("  Dices: %d %d", dice1, dice2);
 
@@ -483,6 +484,7 @@ void print_board(int black_pieces[], int white_pieces[], int dice1, int dice2, i
 	  printf("%d ", movements[l]);
     }
 
+    /* print information about black pieces */
     if(i == limit - 3)
       printf("  Black Pieces");
 
