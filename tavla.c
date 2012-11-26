@@ -93,9 +93,8 @@ void update_scores(int, int, int *, int *, int *);
 void game_over(int, int, int *);
 
 /* Board drawing functions */
-void print_board(int [], int []);
+void print_board(int [], int [], int, int, int[]);
 void print_side(const char *);
-void print_info(int, int, int [], int, int, int, int);
 
 /* Utilize functions for board drawing */
 int get_maximum_piece(int [], int[]);
@@ -406,12 +405,12 @@ void game_over(int black_score, int white_score, int *play_again)
   printf("\n");
 }
 
-void print_board(int black_pieces[], int white_pieces[])
+void print_board(int black_pieces[], int white_pieces[], int dice1, int dice2, int movements[])
 {
   /* prints current state of board to screen */
 
   /* counters */
-  int i, j, k;
+  int i, j, k, l;
   
   /* get number of board lines */
   int limit = get_lines_length(get_maximum_piece(black_pieces, white_pieces));
@@ -463,7 +462,36 @@ void print_board(int black_pieces[], int white_pieces[])
       if(k == 18 || k == 24 || j == 7 || j == 1)
 	printf("%3s||||", "");
     }
+
+    if(i == 0)
+      printf("  White Pieces");
     
+    if(i == 1)
+      printf("    Broken: %d", white_pieces[0]);
+
+    if(i == 2)
+      printf("    Collected: %d", white_pieces[25]);
+
+    if(i == limit / 2 - 1)
+      printf("  Dices: %d %d", dice1, dice2);
+
+    if(i == limit / 2) {
+      printf("  Moves: ");
+      
+      for(l = 0; l < 4; l++)
+	if(movements[l] != 0)
+	  printf("%d ", movements[l]);
+    }
+
+    if(i == limit - 3)
+      printf("  Black Pieces");
+
+    if(i == limit - 2)
+      printf("    Broken: %d", black_pieces[25]);
+    
+    if(i == limit - 1)
+      printf("    Collected: %d", black_pieces[0]);
+
     /* new line */
     printf("\n");
   }
@@ -551,34 +579,6 @@ void print_side(const char *side)
     printf("\n");
     printf("%40sBlack Home Base\n", "");
   }
-}
-
-void print_info(int dice1, int dice2, int movements[], int broken_black,
-		int collected_black, int broken_white, int collected_white)
-{
-  /* 
-   * prints all data that do not seem on board
-   * like broken/collected pieces, dices, movements 
-   */
-
-  int i;
-
-  printf("\n%s%d%s%d%s%d\n%s%d%s%d%s%d%s",
-	 "Broken Blacks: ", broken_black, 
-	 " Collected Blacks: ", collected_black, 
-	 " 1st Dice: ", dice1,
-	 "Broken Whites: ", broken_white, 
-	 " Collected Whites: ", collected_white, 
-	 " 2nd Dice: ", dice2,
-	 " Movements: ");
-
-  for(i = 0; i < 4; i++) {
-    if(movements[i] != 0)
-      printf("%d ", movements[i]);
-  }
-
-  printf("\n\n");
-
 }
 
 void throw_dices(int *dice1, int *dice2)
@@ -804,20 +804,13 @@ void human_play(int black_pieces [], int white_pieces [], int dice1,
 
   /* if there is no available movement, than tell it to player */
   if(!any_movements_exist(black_pieces, white_pieces, movements, color)) {
-    print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements,
-	       black_pieces[25], black_pieces[0], 
-	       white_pieces[0], white_pieces[25]);
+    print_board(black_pieces, white_pieces, dice1, dice2, movements);
     printf("%s's turn. No available movement.\n\n", color);
   }
 
   /* while there is a valid movement, then let player play */
   while(any_movements_exist(black_pieces, white_pieces, movements, color)) {
-    print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements,
-	       black_pieces[25], black_pieces[0],
-	       white_pieces[0], white_pieces[25]);
-    
+    print_board(black_pieces, white_pieces, dice1, dice2, movements);
     do {
       printf("%s's turn.\n", color);
       printf("  Enter piece location: ");
@@ -862,19 +855,13 @@ void computer_play_noob(int black_pieces [], int white_pieces [], int dice1,
 
   /* if there is no valid movements, than tell it to user */
   if(!any_movements_exist(black_pieces, white_pieces, movements, color)) {
-    print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements,
-	       black_pieces[25], black_pieces[0],
-	       white_pieces[0], white_pieces[25]);
+    print_board(black_pieces, white_pieces, dice1, dice2, movements);
     printf("%s's turn. No available movement.\n\n", color);
   }
 
   /* while there is valid movement */
   while(any_movements_exist(black_pieces, white_pieces, movements, color)) {
-    print_board(black_pieces, white_pieces);
-    print_info(dice1, dice2, movements,
-	       black_pieces[25], black_pieces[0],
-	       white_pieces[0], white_pieces[25]);
+    print_board(black_pieces, white_pieces, dice1, dice2, movements);
     /* find a valid movement and play it */
     play_first_move(black_pieces, white_pieces, movements, color);
   }
