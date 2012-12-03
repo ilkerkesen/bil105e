@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     initialize_game(&black_score, &white_score, dice1, dice2, &turn);
 
     /* game loop, it is over when a player's score equals 5 or more */
-    while(black_score < 5 && white_score < 5) {
+    while(black_score < score_limit && white_score < score_limit) {
       initialize_pieces(black_pieces, white_pieces);
       
       /* subgame loop. it finishes when a player collects his all pieces  */
