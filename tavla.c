@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
     game_over(black_score, white_score, &play_again);
   
     /* if user want to play again, then repeat iteration */
-  } while(play_again);
+  } while(play_again == 1);
 
   /* goodbye function, check goodbye function */
   goodbye();
