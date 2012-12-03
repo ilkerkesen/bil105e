@@ -86,7 +86,7 @@ void welcome();
 void goodbye();
 
 /* General game functions: options, states and initializations */
-void select_game_type(int *, int *);
+void select_game_options(int *, int *, int *);
 void initialize_pieces(int [], int []);
 void initialize_game(int *, int *, int, int, int *);
 void update_scores(int, int, int *, int *, int *);
@@ -148,6 +148,9 @@ int main(int argc, char *argv[])
   int is_black_human; 
   int is_white_human;
 
+  /* game maximum score */
+  int score_limit;
+
   /* 0-> do not play, break main game loop */
   /* 1-> wanna play it again, i like it */
   int play_again;
@@ -161,7 +164,7 @@ int main(int argc, char *argv[])
   /* main loop */
   do {
     /* game type selection */
-    select_game_type(&is_black_human, &is_white_human);
+    select_game_options(&is_black_human, &is_white_human, &score_limit);
 
     /* game initialization */
     initialize_game(&black_score, &white_score, dice1, dice2, &turn);
@@ -230,9 +233,9 @@ void goodbye()
   printf("\nThanks for playing.\n");
 }
 
-void select_game_type(int *is_black_human, int *is_white_human)
+void select_game_options(int *is_black_human, int *is_white_human, int *score_limit)
 {
-  /* Gets game options (game mode, color) from user and sets them. */
+  /* Gets game options (game mode, color, score limit) from user and sets them. */
 
   /* 
    * game_type 0 -> human vs. human 
@@ -306,6 +309,17 @@ void select_game_type(int *is_black_human, int *is_white_human)
     *is_black_human = 0;
     *is_white_human = 0;
   }
+
+  do {
+    printf("Enter score limit (min: 1, max: 5): ");
+    scanf("%d", score_limit);
+
+    if(*score_limit < 1 || *score_limit > 5)
+      printf("Invalid selection. Please try again.\n");
+
+    printf("\n");
+
+  } while(*score_limit < 1 || *score_limit > 5);
 
 }
 
