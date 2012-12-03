@@ -52,23 +52,28 @@ int main(int argc, char *argv[])
 
   /* main program loop */
   while(1) {
+    /* print board */
     print_board(black_pieces, white_pieces);
     printf("\n");
 
     /* get movements and move it */
     for(i = 0; i < 2; i++) {
       do {
+	/* get piece location from user */
 	printf("Enter piece-%d location: ", i+1);
 	scanf("%d", &location[i]);
 
+	/* get new location from user */
 	printf("Enter piece-%d new location: ", i+1);
 	scanf("%d", &new_location[i]);
 
+	/* if the move is not valid */
 	if(!is_valid_move(black_pieces, white_pieces, location[i], new_location[i]))
 	  printf("Invalid movement. Please try again.\n");
 
 	printf("\n");
 
+	/* repeat it until the move is valid */
       } while(!is_valid_move(black_pieces, white_pieces, location[i], new_location[i]));
       
       /* move piece */
@@ -82,6 +87,7 @@ int main(int argc, char *argv[])
     for(i = 0; i < 2; i++)
       printf("movement-%d: from %d to %d.\n", i+1, location[i], new_location[i]);
 
+    /* print information about exit */
     printf("Press Ctrl + C to exit.\n");
   }
 
@@ -119,12 +125,17 @@ void initialize_pieces(int black_pieces[], int white_pieces[])
 
 int is_valid_move(int black_pieces[], int white_pieces[], int location, int new_location)
 {
+  /* checks validation of movement */
+
+  /* if location and new_location does not exist on board */
   if(location < 0 || location > 25 || new_location < 0 || new_location > 25)
     return 0;
 
+  /* if no piece exist at location */
   if(black_pieces[location] == 0 && white_pieces[location] == 0)
     return 0;
 
+  /* if there is an enemy gate on new location (except 0 and 25 location) */
   if(((black_pieces[location] != 0 && white_pieces[new_location] > 1) || 
       (white_pieces[location] != 0 && black_pieces[new_location] > 1)) &&
      (new_location != 25 || new_location != 0))
@@ -135,20 +146,26 @@ int is_valid_move(int black_pieces[], int white_pieces[], int location, int new_
 
 void move(int black_pieces[], int white_pieces[], int location, int new_location)
 {
+  /* moves piece */
+
+  /* black piece movement */
   if(black_pieces[location] != 0) {
     black_pieces[location] -= 1;
     black_pieces[new_location] += 1;
 
+    /* if there is a single white piece, hit it */
     if(white_pieces[new_location] != 0) {
       white_pieces[new_location] -= 1;
       white_pieces[0] += 1;
     }
   }
 
+  /* white piece movement  */
   if(white_pieces[location] != 0) {
     white_pieces[location] -= 1;
     white_pieces[new_location] += 1;
 
+    /* if there is a single black piece, hit it */
     if(black_pieces[new_location] != 0) {
       black_pieces[new_location] -= 1;
       black_pieces[25] += 1;
