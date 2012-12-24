@@ -130,6 +130,7 @@ float **read_matrix(int *m, const char *file_name)
 void write_matrix(float **matrix, int size, const char *file_name)
 {
   FILE *file_pointer;
+  float result[size];
 
   int i;
   int j;
@@ -148,6 +149,26 @@ void write_matrix(float **matrix, int size, const char *file_name)
     fprintf(file_pointer, "\n");
   }
 
+  fprintf(file_pointer, "\n");
+
+  result[size - 1] = matrix[size-1][size] / matrix[size-1][size-1];
+  result[size - 2] = matrix[size-1][size] / matrix[size-1][size-1];
+  result[size - 3] = matrix[size-1][size] / matrix[size-1][size-1];
+
+  for(i = size - 2; i > -1; i--) {
+    result[i] = matrix[i][size];
+    
+    for(j = size - 1; j > i; j--) {
+      result[i] -= result[j] * matrix[i][j];
+    }
+
+    result[i] /= matrix[i][i];
+  }
+
+  for(i = 0; i < size; i++) {
+    fprintf(file_pointer, "x%d = %.2f\n", i, result[i]);
+  }
+  
   fclose(file_pointer);
 }
 
