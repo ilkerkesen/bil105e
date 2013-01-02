@@ -1,9 +1,4 @@
 /*
- * Matrix Solver (Gaussian Elimination)
- * Author: İlker Kesen
- * E-Mail: keseni _at_ itu.edu.tr
- * Number: 040100411
- *
  * example min.txt:
  *
  * 3 1 1 3
@@ -37,10 +32,12 @@ int main(int argc, char *argv[])
   float **matrix;
   int size;
 
-  matrix = read_matrix(&size, INPUT_FILE);
-  matrix = gaussian_elimination(matrix, size);
-  write_matrix(matrix, size, OUTPUT_FILE);
-
+  if(argc == 0) {
+    matrix = read_matrix(&size, INPUT_FILE);
+    matrix = gaussian_elimination(matrix, size);
+    write_matrix(matrix, size, OUTPUT_FILE);
+  }
+  
   free(matrix);
 
   return 0;
@@ -160,9 +157,7 @@ void write_matrix(float **matrix, int size, const char *file_name)
     
     for(j = size - 1; j > i; j--) {
       result[i] -= result[j] * matrix[i][j];
-    }
-
-    result[i] /= matrix[i][i];
+[i] /= matrix[i][i];
   }
 
   for(i = 0; i < size; i++) {

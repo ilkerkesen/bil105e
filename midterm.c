@@ -1,13 +1,3 @@
-/* --------------------------------- ABOUT ---------------------------------- */
-
-/*
- * Solution of Midterm Question
- * Author: İlker Kesen
- * E-mail: keseni _at_ itu.edu.tr
- * Number: 040100411
- * CRN: 12887
- */
-
 /* --------------------------- INCLUDED LIBRARIES --------------------------- */
 
 #include <stdio.h>

@@ -1,73 +1,3 @@
-/* -------------------------------- COPYING --------------------------------- */
-
-/*
- *   Copyright (C) 2012 by İlker Kesen <ilkerksn[at]gmail.com>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the
- *   Free Software Foundation, Inc.,
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
-/* --------------------------------- ABOUT ---------------------------------- */
-
-/*
- * Tavla (backgammon) game with text-based ui
- * Author: İlker Kesen
- * E-mail: keseni _at_ itu.edu.tr
- * Number: 040100411
- * CRN: 12887
- */
-
-/* ----------------------------- DOCUMENTATION ------------------------------ */
-
-/*
- *   Coding Standarts
- *     1. Use under_score instead of camelCase.
- *     2. Set maximum row to 80 character.
- *     3. Use type *var instead of type* var for pointers.
- *     4. Indentations must be two spaces.
- *   
- *   General Algorithm
- *     There are five important things you should know:
- *       1. Game/Board state is stored in two 26-element-sized integer arrays 
- *          (black_pieces,  white_pieces). 1-24 elements are available locations
- *          on board, 0 is location for collected black pieces and broken white
- *          pieces. Therefore, 25 is location for broken black pieces and collected
- *          white pieces.
- *       2. Drawing board is a little bit hard to understand, but in my opinion,
- *          it is well documented in drawing functions.
- *	 3. is_available_movement is the most crucial function of game, that checks
- *	    validation of a movement based on backgammon rules and returns 0 or 1.
- *       4. AI is not developed totally yet, but play_first_move function works
- *          nice. It plays first available movement in current state.
- *       5. Hard AI will depend on "state ranking system". I'll explain it later.
- *
- *     If you want to get involved about algorithm, just read the code. 
- *
- *   Building (I will generate a Makefile in the future)
- *     on Linux: compile it with gcc or clang (gcc tavla.c or clang tavla.c)
- *     on Windows: just compile it with your IDE (Dev-C++/mingw32 works fine)
- *     on Mac: never tried, but gcc/clang are able to build it.
- *
- *   Running
- *     on Linux: /path/to/source/a.out
- *     on Windows: just click twice
- * 
- *   Hacking
- *     github.com/ilkerkesen/tavla (will be available after homework deadline)
- */
-
 /* --------------------------- INCLUDED LIBRARIES --------------------------- */
 
 #include <stdio.h>
@@ -233,7 +163,7 @@ void goodbye()
 {
   /* Prints informaton about game at exit. */
 
-  printf("\nThanks for playing.\n");
+  printf("Thanks for playing.\n");
 }
 
 void select_game_options(int *is_black_human, int *is_white_human, int *score_limit)
